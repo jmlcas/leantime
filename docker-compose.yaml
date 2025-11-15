@@ -1,0 +1,35 @@
+services:
+
+  mysql_leantime:
+    image: mysql:8.4
+    container_name: mysql_leantime
+    volumes:
+      - ./db_data:/var/lib/mysql
+    restart: unless-stopped
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=321.qwerty
+      - MYSQL_USER=admin
+      - MYSQL_PASSWORD=321.qwerty
+      - MYSQL_DATABASE=leantime
+    command: --character-set-server=UTF8MB4 --collation-server=UTF8MB4_unicode_ci
+
+  leantime:
+    image: leantime/leantime:latest
+    container_name: leantime2
+    restart: unless-stopped
+    environment:
+      - LEAN_DB_HOST=mysql_leantime
+      - LEAN_DB_USER=admin
+      - LEAN_DB_PASSWORD=321.qwerty
+      - LEAN_DB_DATABASE=leantime
+      - LEAN_EMAIL_RETURN=changeme@local.local
+    volumes:
+      - ./public_userfiles:/var/www/html/public/userfiles
+      - ./userfiles:/var/www/html/userfiles
+      - ./plugins:/var/www/html/app/Plugins
+    ports:
+      - "8200:8080"
+    depends_on:
+      - mysql_leantime
